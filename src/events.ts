@@ -46,7 +46,9 @@ export function mountEvents(client: Client): void {
 
         // Log the removal for debugging purposes
         const timestamp = new Date().toLocaleString(undefined, LOG_ENTRY_DATE_FORMAT);
-        console.info(`[${timestamp}] Removing poll from ${message.author.id} sent in #${channel.name}: ${data.poll}`);
+
+        console.info(`[${timestamp}] Removing poll from ${message.author.displayName} (${message.author.id}) sent in #${channel.name}`);
+        console.debug(JSON.stringify(data.poll, null, 2));
 
         // Remove and log the poll
         message.delete();
