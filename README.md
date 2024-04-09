@@ -1,9 +1,18 @@
 # Poll Executioner
+A simple bot that will remove polls sent by users that do not have excluded roles (can be configured)
 
-A simple bot that will remove polls sent by non-staff members.
+> [!IMPORTANT]
+> The `MESSAGE_CONTENT` [privileged gateway intent](https://support-dev.discord.com/hc/en-us/articles/6207308062871-What-are-Privileged-Intents) must be enabled in the [developer portal](https://discord.com/developers).
 
-# Configuration
+## Required permissions
+The bot **must** have the following permissions to function without any issues:
 
+- `Manage Messages` - Any channel the bot needs to monitor for polls
+- `View Channels` - Any channel the bot needs to monitor for polls
+- `Send Messages` - The logging channel
+- `Embed Links` - The logging channel
+
+## Configuration
 Create a `.env` file in the root directory with the following contents:
 
 https://github.com/Rodis-Infrastructure/poll-executioner/blob/8af6087e20074c178f18b87699aeaa7494f8b536/.env.example#L1-L2
@@ -20,16 +29,17 @@ IDs of the roles that will be able to bypass the bot's restrictions:
 excluded_roles: ["ROLE_ID"]
 ```
 
-# Startup
+See [example.yml](configs/example.yml) for more info.
 
-To install dependencies:
+## Startup
+You could either use **docker** or **bun** to start up the bot. For bun:
 
+Install dependencies:
 ```bash
 bun install
 ```
 
-To run:
-
+Start up the bot:
 ```bash
 bun start
 ```
