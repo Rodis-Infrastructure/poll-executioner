@@ -34,6 +34,11 @@ export default class GuildConfig {
                     && !file.startsWith("example") // Ignore the example file
             });
 
+        if (!files.length) {
+            console.error("No config files found in the `configs` directory");
+            process.exit(1);
+        }
+
         for (const filename of files) {
             const [guildId] = filename.split(".");
             const guild = await client.guilds.fetch(guildId).catch(() => null);
