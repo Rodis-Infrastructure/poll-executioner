@@ -1,0 +1,5 @@
+# The channel where the bot will log the removed polls
+logging_channel: "CHANNEL_ID"
+
+# Roles that are immune to the poll removal
+excluded_roles: ["ROLE_ID"]

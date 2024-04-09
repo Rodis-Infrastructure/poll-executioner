@@ -1,0 +1,29 @@
+# Configuration files
+
+configs/*.yml
+configs/*.yaml
+!configs/example.yml
+!configs/example.yaml
+
+# Dependency directories
+
+node_modules/
+
+# dotenv environment variable files
+
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Compiled output
+
+dist
+
+# IntelliJ based IDEs
+
+.idea
+
+# Finder (MacOS) folder config
+.DS_Store

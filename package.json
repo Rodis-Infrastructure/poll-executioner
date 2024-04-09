@@ -1,0 +1,15 @@
+{
+  "name": "poll-executioner",
+  "module": "src/index.ts",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "yaml": "^2.4.1"
+  },
+  "scripts": {
+    "start": "bun src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "type": "module"
+}
