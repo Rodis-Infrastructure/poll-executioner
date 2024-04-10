@@ -140,11 +140,11 @@ export default class GuildConfig {
             .setFields([
                 {
                     name: "Author",
-                    value: `${message.author}`
+                    value: `${message.author} (\`${message.author.id}\`)`
                 },
                 {
                     name: "Channel",
-                    value: `${message.channel} (\`${message.channel.id}\`)`
+                    value: `${message.channel}`
                 },
                 {
                     name: "Posted",
