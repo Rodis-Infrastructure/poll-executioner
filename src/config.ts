@@ -10,8 +10,6 @@ import {
     type Snowflake, PermissionsBitField,
 } from "discord.js";
 
-import { cropFieldContent } from "./utils.ts";
-
 import fs from "node:fs";
 import YAML from "yaml";
 
@@ -154,11 +152,13 @@ export default class GuildConfig {
                 },
                 {
                     name: "Question",
-                    value: cropFieldContent(poll.question.text)
+                    // Cannot exceed 1024 characters (max is 300)
+                    value: poll.question.text
                 },
                 {
                     name: "Options",
-                    value: cropFieldContent(pollOptions.join("\n"))
+                    // Cannot exceed 1024 characters (max is 589)
+                    value: pollOptions.join("\n")
                 }
             ])
             .setTimestamp();
