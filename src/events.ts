@@ -1,5 +1,5 @@
 import { LOG_ENTRY_DATE_FORMAT } from "./constants.ts";
-import { type Client, Events } from "discord.js";
+import { type Client, Events, PermissionsBitField } from "discord.js";
 
 import GuildConfig from "./config.ts";
 
@@ -34,6 +34,12 @@ export function mountEvents(client: Client): void {
         const channel = await config.guild.channels.fetch(data.channel_id).catch(() => null);
         if (!channel || !channel.isTextBased()) return;
 
+        // Return if the bot does not have permission to manage messages
+        if (!channel.guild.members.me?.permissionsIn(channel).has(PermissionsBitField.Flags.ManageMessages)) {
+            console.error(`Ignoring poll in #${channel.name} from @${data.author.username} (${data.author.id}), missing the "Manage Messages" permission`);
+            return;
+        }
+
         const message = await channel.messages.fetch(data.id).catch(() => null);
         if (!message) return;
 
@@ -47,7 +53,7 @@ export function mountEvents(client: Client): void {
         // Log the removal for debugging purposes
         const timestamp = new Date().toLocaleString(undefined, LOG_ENTRY_DATE_FORMAT);
 
-        console.info(`[${timestamp}] Removing poll from ${message.author.displayName} (${message.author.id}) sent in #${channel.name}`);
+        console.info(`[${timestamp}] Removing poll from @${message.author.username} (${message.author.id}) sent in #${channel.name}`);
         console.debug(JSON.stringify(data.poll, null, 2));
 
         // Remove and log the poll

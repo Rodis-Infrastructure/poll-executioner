@@ -7,7 +7,7 @@ import {
     type Client,
     type GuildTextBasedChannel,
     type Message,
-    type Snowflake,
+    type Snowflake, PermissionsBitField,
 } from "discord.js";
 
 import { cropFieldContent } from "./utils.ts";
@@ -92,6 +92,20 @@ export default class GuildConfig {
 
         if (!loggingChannel.isTextBased()) {
             console.error(`[GUILD: ${guild.id}] Failed to mount config file, logging channel with ID ${data.logging_channel} is not a text channel`);
+            process.exit(1);
+        }
+
+        const REQUIRED_PERMISSIONS = [
+            PermissionsBitField.Flags.SendMessages,
+            PermissionsBitField.Flags.EmbedLinks
+        ];
+
+        const missingPermissions = guild.members?.me?.permissionsIn(loggingChannel)
+            .missing(REQUIRED_PERMISSIONS);
+
+        if (missingPermissions?.length) {
+            console.error(`[GUILD: ${guild.id}] Failed to mount config file, missing permissions in logging channel:`);
+            console.error(missingPermissions.join(", "));
             process.exit(1);
         }
 
