@@ -4,10 +4,12 @@ import {
     Guild,
     time,
     TimestampStyles,
+    PermissionsBitField,
     type Client,
     type GuildTextBasedChannel,
     type Message,
-    type Snowflake, PermissionsBitField,
+    type Snowflake,
+    type APIEmoji, hyperlink
 } from "discord.js";
 
 import fs from "node:fs";
@@ -131,13 +133,27 @@ export default class GuildConfig {
      */
     log(message: Message<true>, poll: Poll): void {
         const pollOptions = poll.answers.map(answer => {
-            return `${answer.answer_id}. ${answer.poll_media.text}`;
+            let option = `${answer.answer_id}. ${answer.poll_media.text}`;
+
+            if (answer.poll_media.emoji) {
+                const parsedEmoji = parseEmoji(answer.poll_media.emoji);
+                // Prepend the emoji to the option's text
+                option = option.replace(".", `. ${parsedEmoji}`);
+            }
+
+            return option;
         });
 
+        const formattedPollOptions = `**Options**:\n\n${pollOptions.join("\n")}`;
         const embed = new EmbedBuilder()
             .setColor(Colors.Red)
             .setAuthor({ name: "Poll Deleted" })
+            .setDescription(formattedPollOptions)
             .setFields([
+                {
+                    name: "Question",
+                    value: poll.question.text
+                },
                 {
                     name: "Author",
                     value: `${message.author} (\`${message.author.id}\`)`
@@ -149,22 +165,28 @@ export default class GuildConfig {
                 {
                     name: "Posted",
                     value: time(message.createdAt, TimestampStyles.ShortDateTime)
-                },
-                {
-                    name: "Question",
-                    // Cannot exceed 1024 characters (max is 300)
-                    value: poll.question.text
-                },
-                {
-                    name: "Options",
-                    // Cannot exceed 1024 characters (max is 589)
-                    value: pollOptions.join("\n")
                 }
             ])
             .setTimestamp();
 
         this.data.logging_channel.send({ embeds: [embed] });
     }
+}
+
+/**
+ * Parse the emoji to be appropriate for logging
+ *
+ * @param emoji - The emoji to parse
+ * @returns The raw emoji wrapped in an inline code block (and hyperlink if custom emoji)
+ */
+function parseEmoji(emoji: APIEmoji): string {
+    // Emoji is not a custom emoji
+    if (!emoji.id) return `\`${emoji.name}\``;
+
+    const extension = emoji.animated ? "gif" : "webp";
+    const emojiUrl = `https://cdn.discordapp.com/emojis/${emoji.id}.${extension}`;
+
+    return hyperlink(`\`<\\:${emoji.name}\\:${emoji.id}>\``, emojiUrl);
 }
 
 /** The guild configuration */
@@ -194,5 +216,5 @@ interface PollText {
 
 interface PollAnswer {
     answer_id: number;
-    poll_media: PollText
+    poll_media: PollText & Record<"emoji", APIEmoji>
 }
