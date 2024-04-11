@@ -1,5 +1,5 @@
 import { LOG_ENTRY_DATE_FORMAT } from "./constants.ts";
-import { type Client, Events, PermissionsBitField } from "discord.js";
+import { type Client, Events, type GuildTextBasedChannel, PermissionsBitField } from "discord.js";
 
 import GuildConfig from "./config.ts";
 
@@ -11,7 +11,7 @@ import GuildConfig from "./config.ts";
 export function mountEvents(client: Client): void {
     // Log when the bot is ready
     client.once(Events.ClientReady, (client: Client<true>) => {
-        console.info(`Logged in as ${client.user.tag}`);
+        console.info(`Logged in as ${client.user.tag} (${client.user.id})`);
     });
 
     // Mount raw event since polls are not supported by discord.js
@@ -24,40 +24,49 @@ export function mountEvents(client: Client): void {
             return;
         }
 
+        const timestamp = new Date().toLocaleString(undefined, LOG_ENTRY_DATE_FORMAT);
         const config = GuildConfig.get(data.guild_id);
 
         if (!config) {
-            console.error(`Guild ${data.guild_id} does not have a configuration file`);
+            console.error(`[${timestamp}, GUILD: ${data.guild_id}] Config not found`);
             return;
         }
 
         const channel = await config.guild.channels.fetch(data.channel_id).catch(() => null);
         if (!channel || !channel.isTextBased()) return;
 
-        // Return if the bot does not have permission to manage messages
-        if (!channel.guild.members.me?.permissionsIn(channel).has(PermissionsBitField.Flags.ManageMessages)) {
-            console.error(`Ignoring poll in #${channel.name} from @${data.author.username} (${data.author.id}), missing the "Manage Messages" permission`);
+        const userReference = `@${data.author.username} (${data.author.id})`;
+
+        // Ignore if the bot does not have permission to manage messages
+        if (!canManageMessagesIn(channel)) {
+            console.warn(`[${timestamp}] Ignoring poll from ${userReference}, sent in #${channel.name}. Missing the "Manage Messages" permission`);
             return;
         }
 
+        // Fetch the message for removal
         const message = await channel.messages.fetch(data.id).catch(() => null);
         if (!message) return;
 
-        const isImmune = message.member?.roles.cache.some(role => {
-            return config.data.excluded_roles.includes(role.id);
-        });
-
-        // Do not remove polls created from users with excluded roles
-        if (isImmune) return;
+        // Do not remove polls created by users with excluded roles
+        if (message.member && config.isImmune(message.member)) return;
 
         // Log the removal for debugging purposes
-        const timestamp = new Date().toLocaleString(undefined, LOG_ENTRY_DATE_FORMAT);
+        const stringifiedPoll = JSON.stringify(data.poll, null, 2);
 
-        console.info(`[${timestamp}] Removing poll from @${message.author.username} (${message.author.id}) sent in #${channel.name}`);
-        console.debug(JSON.stringify(data.poll, null, 2));
+        console.info(`[${timestamp}] Removing poll from ${userReference}, sent in #${channel.name}`);
+        console.debug(stringifiedPoll);
 
         // Remove and log the poll
         message.delete();
         config.log(message, data.poll);
     });
+}
+
+/**
+ * Whether the client has permission to manage messages in the specified channel
+ *
+ * @param channel - The channel to check
+ */
+function canManageMessagesIn(channel: GuildTextBasedChannel): boolean {
+    return channel.guild.members.me?.permissionsIn(channel).has(PermissionsBitField.Flags.ManageMessages) ?? false;
 }

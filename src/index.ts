@@ -3,6 +3,7 @@ import { mountEvents } from "./events.ts";
 
 import GuildConfig from "./config.ts";
 
+// Ensure a Discord bot token is provided
 if (!process.env.DISCORD_TOKEN) {
     console.error("Missing DISCORD_TOKEN environment variable");
     process.exit(1);
@@ -17,6 +18,7 @@ const client: Client<true> = new Client({
     ]
 });
 
+// Entry point
 async function main() {
     mountEvents(client);
 
