@@ -11,7 +11,7 @@ import {
     type GuildTextBasedChannel,
     type Message,
     type Snowflake,
-    type APIEmoji,
+    type APIEmoji, AttachmentBuilder,
 } from "discord.js";
 
 import fs from "node:fs";
@@ -170,7 +170,7 @@ export default class GuildConfig {
 
         const embed = new EmbedBuilder()
             .setColor(Colors.Red)
-            .setAuthor({ name: "Poll Deleted" })
+            .setAuthor({ name: "Poll Deleted", iconURL: "attachment://poll_delete.png" })
             // The text will not exceed 4096 bytes
             .setDescription(`**Answers**:\n\n${answers}`)
             .setFields([
@@ -194,8 +194,13 @@ export default class GuildConfig {
             ])
             .setTimestamp();
 
+        const pollDeleteIcon = new AttachmentBuilder("assets/poll_delete.png");
+
         // Send the log
-        this.data.logging_channel.send({ embeds: [embed] });
+        this.data.logging_channel.send({
+            embeds: [embed],
+            files: [pollDeleteIcon]
+        });
     }
 
     /**
