@@ -1,5 +1,6 @@
 import { LOG_ENTRY_DATE_FORMAT } from "./constants.ts";
-import { type Client, Events, type GuildTextBasedChannel, PermissionsBitField } from "discord.js";
+import { Events, PermissionsBitField } from "discord.js";
+import type { Client, GuildTextBasedChannel } from "discord.js";
 
 import GuildConfig from "./config.ts";
 
@@ -57,7 +58,10 @@ export function mountEvents(client: Client): void {
         console.debug(stringifiedPoll);
 
         // Remove and log the poll
-        message.delete();
+        message.delete().catch(() => {
+            console.warn(`[${timestamp}] Failed to remove poll from ${userReference}, sent in #${channel.name}`);
+        });
+
         config.log(message, data.poll);
     });
 }

@@ -7,12 +7,10 @@ import {
     PermissionsBitField,
     hyperlink,
     GuildMember,
-    type Client,
-    type GuildTextBasedChannel,
-    type Message,
-    type Snowflake,
-    type APIEmoji, AttachmentBuilder,
+    AttachmentBuilder,
 } from "discord.js";
+
+import type { Client, GuildTextBasedChannel, Message, Snowflake, APIEmoji } from "discord.js";
 
 import fs from "node:fs";
 import YAML from "yaml";

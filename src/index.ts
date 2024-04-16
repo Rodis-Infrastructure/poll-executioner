@@ -19,13 +19,14 @@ const client: Client<true> = new Client({
 });
 
 // Entry point
-async function main() {
+async function main(): Promise<void> {
+    // Mount event listeners
     mountEvents(client);
 
-    // Log into Discord
+    // Login to Discord
     await client.login(process.env.DISCORD_TOKEN);
 
-    // Mount the events and guild config
+    // Mount guild configurations
     await GuildConfig.mount(client);
 }
 
