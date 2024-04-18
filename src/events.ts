@@ -10,7 +10,7 @@ import GuildConfig from "./config.ts";
  * @param client The client instance
  */
 export function mountEvents(client: Client): void {
-    // Log when the bot is ready
+    // Log when the app is ready
     client.once(Events.ClientReady, (client: Client<true>) => {
         console.info(`Logged in as ${client.user.tag} (${client.user.id})`);
     });
@@ -38,7 +38,7 @@ export function mountEvents(client: Client): void {
 
         const userReference = `@${data.author.username} (${data.author.id})`;
 
-        // Ignore if the bot does not have permission to manage messages
+        // Ignore if the app does not have permission to manage messages
         if (!canManageMessagesIn(channel)) {
             console.warn(`[${timestamp}] Ignoring poll from ${userReference}, sent in #${channel.name}. Missing the "Manage Messages" permission`);
             return;

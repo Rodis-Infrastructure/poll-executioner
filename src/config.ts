@@ -104,7 +104,7 @@ export default class GuildConfig {
             .fetch(data.logging_channel)
             .catch(() => null);
 
-        // Ensure the logging channel exists/can be accessed by the bot
+        // Ensure the logging channel exists/can be accessed by the app
         if (!loggingChannel) {
             handleInvalid("logging channel with ID ${data.logging_channel} not found");
         }
@@ -241,7 +241,7 @@ interface IGuildConfig {
 
 // The raw guild configuration
 interface RawGuildConfig {
-    // The channel where the bot will log the removed polls
+    // The channel where the app will log the removed polls
     logging_channel: Snowflake;
     // Roles that are immune to the poll removal
     excluded_roles: Snowflake[];

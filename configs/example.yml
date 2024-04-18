@@ -1,4 +1,4 @@
-# The channel where the bot will log the removed polls
+# The channel where the app will log the removed polls
 logging_channel: "CHANNEL_ID"
 
 # Roles that are immune to the poll removal

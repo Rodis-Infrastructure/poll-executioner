@@ -3,7 +3,7 @@ import { mountEvents } from "./events.ts";
 
 import GuildConfig from "./config.ts";
 
-// Ensure a Discord bot token is provided
+// Ensure a Discord app token is provided
 if (!process.env.DISCORD_TOKEN) {
     console.error("Missing DISCORD_TOKEN environment variable");
     process.exit(1);
